@@ -1,56 +1,73 @@
 import { WorkOrderDoc } from "./types";
 
+/**
+ * Topologically sort work orders by dependency graph (dependsOnWorkOrderIds).
+ * Throws a clear error if:
+ * - a dependency references a missing work order
+ * - a dependency cycle exists
+ *
+ * Uses Kahn's algorithm (in-degree + queue).
+ */
 export function topologicalSortWorkOrders(workOrders: WorkOrderDoc[]): WorkOrderDoc[] {
-  const byId = new Map(workOrders.map(w => [w.docId, w]));
-  const indeg = new Map<string, number>();
-  const adj = new Map<string, string[]>();
+  const byId = new Map<string, WorkOrderDoc>();
+  for (const wo of workOrders) byId.set(wo.docId, wo);
 
-  for (const w of workOrders) {
-    indeg.set(w.docId, 0);
-    adj.set(w.docId, []);
+  // Build graph: parent -> [children]
+  const childrenByParent = new Map<string, string[]>();
+  const indegree = new Map<string, number>();
+
+  for (const wo of workOrders) {
+    indegree.set(wo.docId, 0);
+    childrenByParent.set(wo.docId, []);
   }
 
-  for (const w of workOrders) {
-    for (const p of w.data.dependsOnWorkOrderIds ?? []) {
-      if (!byId.has(p)) throw new Error(`Dependency not found: ${p} referenced by ${w.docId}`);
-      adj.get(p)!.push(w.docId);
-      indeg.set(w.docId, (indeg.get(w.docId) ?? 0) + 1);
+  // Fill edges based on dependsOnWorkOrderIds (parent -> child)
+  for (const child of workOrders) {
+    const parents = child.data.dependsOnWorkOrderIds ?? [];
+    for (const parentId of parents) {
+      if (!byId.has(parentId)) {
+        throw new Error(`Dependency not found: parent=${parentId} for child=${child.docId}`);
+      }
+      childrenByParent.get(parentId)!.push(child.docId);
+      indegree.set(child.docId, (indegree.get(child.docId) ?? 0) + 1);
     }
   }
 
-  const queue: WorkOrderDoc[] = [];
-  for (const w of workOrders) {
-    if ((indeg.get(w.docId) ?? 0) === 0) queue.push(w);
+  // Deterministic queue: sort ids to keep stable output
+  const queue: string[] = [];
+  for (const [id, deg] of indegree.entries()) {
+    if (deg === 0) queue.push(id);
   }
+  queue.sort((a, b) => a.localeCompare(b));
 
-  // deterministic: stable sort by original start + id
-  queue.sort((a, b) => {
-    const sa = a.data.startDate.localeCompare(b.data.startDate);
-    if (sa !== 0) return sa;
-    return a.docId.localeCompare(b.docId);
-  });
+  const sortedIds: string[] = [];
 
-  const out: WorkOrderDoc[] = [];
-  while (queue.length) {
-    const cur = queue.shift()!;
-    out.push(cur);
+  while (queue.length > 0) {
+    const id = queue.shift()!;
+    sortedIds.push(id);
 
-    for (const nxtId of adj.get(cur.docId) ?? []) {
-      indeg.set(nxtId, (indeg.get(nxtId) ?? 0) - 1);
-      if ((indeg.get(nxtId) ?? 0) === 0) queue.push(byId.get(nxtId)!);
+    const children = childrenByParent.get(id) ?? [];
+    // deterministic: process children in stable order
+    children.sort((a, b) => a.localeCompare(b));
+
+    for (const c of children) {
+      indegree.set(c, (indegree.get(c) ?? 0) - 1);
+      if (indegree.get(c) === 0) {
+        queue.push(c);
+        queue.sort((a, b) => a.localeCompare(b));
+      }
     }
-
-    queue.sort((a, b) => {
-      const sa = a.data.startDate.localeCompare(b.data.startDate);
-      if (sa !== 0) return sa;
-      return a.docId.localeCompare(b.docId);
-    });
   }
 
-  if (out.length !== workOrders.length) {
-    // cycle exists
-    const stuck = workOrders.filter(w => !out.some(x => x.docId === w.docId)).map(w => w.docId);
-    throw new Error(`Cycle detected in dependencies. Involved work orders: ${stuck.join(", ")}`);
+  // Cycle detection: if not all nodes were processed
+  if (sortedIds.length !== workOrders.length) {
+    const stuck = [...indegree.entries()]
+      .filter(([, deg]) => deg > 0)
+      .map(([id]) => id)
+      .sort((a, b) => a.localeCompare(b));
+
+    throw new Error(`Dependency cycle detected among: ${stuck.join(", ")}`);
   }
-  return out;
+
+  return sortedIds.map(id => byId.get(id)!);
 }

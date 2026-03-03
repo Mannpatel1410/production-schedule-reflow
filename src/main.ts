@@ -14,7 +14,7 @@ function runScenario(name: string, workOrders: any[]) {
   if (result.changes.length === 0) console.log("  (no changes)");
   for (const c of result.changes) {
     console.log(
-      `- ${c.workOrderNumber}: ${c.oldStartDate} -> ${c.newStartDate}, ${c.oldEndDate} -> ${c.newEndDate} | deltaEnd=${c.deltaMinutes}m | reasons=${c.reasons.join(",")}`
+    `- ${c.workOrderNumber}: ${c.oldStartDate} -> ${c.newStartDate}, ${c.oldEndDate} -> ${c.newEndDate} | deltaEnd=${c.deltaMinutes}m | reasons=${c.reasons.join(",")} | why=${c.why}`
     );
   }
 
