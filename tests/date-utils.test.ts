@@ -12,21 +12,21 @@ const shifts = [
 
 describe("addWorkingMinutes", () => {
 
-  it("handles shift spanning", () => {
+    it("handles shift spanning", () => {
     const start = DateTime.fromISO("2024-08-12T16:00:00Z", { zone: "utc" });
     const result = addWorkingMinutes(start, 120, shifts, []);
     expect(result.end.toUTC().toISO()).toBe("2024-08-13T09:00:00.000Z");
-  });
+    });
 
-  it("skips maintenance window", () => {
+    it("skips maintenance window", () => {
     const start = DateTime.fromISO("2024-08-14T10:00:00Z");
     const maintenance = [{
-      start: DateTime.fromISO("2024-08-14T11:00:00Z"),
-      end: DateTime.fromISO("2024-08-14T14:00:00Z")
+        start: DateTime.fromISO("2024-08-14T11:00:00Z"),
+        end: DateTime.fromISO("2024-08-14T14:00:00Z")
     }];
 
     const result = addWorkingMinutes(start, 240, shifts, maintenance);
     expect(result.end.toUTC().toISO()).toBe("2024-08-14T17:00:00.000Z");
-  });
+    });
 
 });
