@@ -12,5 +12,5 @@
 
     "verbatimModuleSyntax": false
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "scenarios/sample-data.ts"]
 }

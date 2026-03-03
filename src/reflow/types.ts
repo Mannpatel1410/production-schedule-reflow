@@ -79,6 +79,7 @@ export interface WorkOrderChange {
   newEndDate: ISODateString;
   deltaMinutes: number; // newEnd - oldEnd (elapsed minutes)
   reasons: ChangeReason[];
+  why: string;
 }
 
 export interface ReflowResult {
