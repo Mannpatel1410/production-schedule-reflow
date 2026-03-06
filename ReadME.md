@@ -1,4 +1,8 @@
 # Production Schedule Reflow
+### Loom Demo
+
+A short walkthrough of the scheduling algorithm and scenarios can be viewed here:
+https://www.loom.com/share/9bed15f263854f66906ad2225a1a7aee
 
 ## Overview
 
@@ -152,7 +156,7 @@ Result:
 
 3. **Maintenance + Multi-Parent Dependencies**  
    Combined constraint case with maintenance blocking and multiple parents.
-   
+
 4. **Work Center Conflict Resolution**  
    Multiple work orders competing for the same work center are automatically sequenced without overlaps.
 ---
