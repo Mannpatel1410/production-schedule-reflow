@@ -191,3 +191,62 @@ export const scenario3_maintenanceAndMultiparent: WorkOrderDoc[] = [
     },
   },
 ];
+
+/**
+ * Scenario 4: Work Center Conflict Resolution
+ *
+ * Multiple work orders are initially scheduled to overlap on the same work center.
+ * The scheduler must enforce the "single work order per work center" constraint.
+ *
+ * Expected behavior:
+ * - Only one job can run at a time on the work center
+ * - Subsequent jobs will be shifted forward to the earliest available slot
+ * - Shift boundaries must still be respected
+ *
+ * This scenario demonstrates the scheduler's ability to resolve resource conflicts
+ * without dependency relationships between work orders.
+ */
+export const scenario4_workCenterConflict: WorkOrderDoc[] = [
+  {
+    docId: "wo-X1",
+    docType: "workOrder",
+    data: {
+      workOrderNumber: "X1",
+      manufacturingOrderId: "mo-4",
+      workCenterId: "wc-extrusion-2",
+      startDate: "2024-08-15T08:00:00Z",
+      endDate: "2024-08-15T10:00:00Z",
+      durationMinutes: 120,
+      isMaintenance: false,
+      dependsOnWorkOrderIds: [],
+    },
+  },
+  {
+    docId: "wo-X2",
+    docType: "workOrder",
+    data: {
+      workOrderNumber: "X2",
+      manufacturingOrderId: "mo-4",
+      workCenterId: "wc-extrusion-2",
+      startDate: "2024-08-15T09:00:00Z",
+      endDate: "2024-08-15T11:00:00Z",
+      durationMinutes: 120,
+      isMaintenance: false,
+      dependsOnWorkOrderIds: [],
+    },
+  },
+  {
+    docId: "wo-X3",
+    docType: "workOrder",
+    data: {
+      workOrderNumber: "X3",
+      manufacturingOrderId: "mo-4",
+      workCenterId: "wc-extrusion-2",
+      startDate: "2024-08-15T09:30:00Z",
+      endDate: "2024-08-15T10:30:00Z",
+      durationMinutes: 60,
+      isMaintenance: false,
+      dependsOnWorkOrderIds: [],
+    },
+  },
+];

@@ -24,7 +24,7 @@ describe("Dependency graph", () => {
         const a = wo("A", []);
         const b = wo("B", ["A"]);
 
-        const sorted = topologicalSortWorkOrders([b, a]); // intentionally shuffled
+        const sorted = topologicalSortWorkOrders([b, a]);
         expect(sorted.map(x => x.docId)).toEqual(["A", "B"]);
     });
 

@@ -152,7 +152,9 @@ Result:
 
 3. **Maintenance + Multi-Parent Dependencies**  
    Combined constraint case with maintenance blocking and multiple parents.
-
+   
+4. **Work Center Conflict Resolution**  
+   Multiple work orders competing for the same work center are automatically sequenced without overlaps.
 ---
 
 ## Testing

@@ -1,6 +1,6 @@
 // src/main.ts
 import { ReflowService } from "./reflow/reflow.service";
-import { workCenters, scenario1_delayCascade, scenario2_shiftSpan, scenario3_maintenanceAndMultiparent } from "../scenarios/sample-data";
+import { workCenters, scenario1_delayCascade, scenario2_shiftSpan, scenario3_maintenanceAndMultiparent, scenario4_workCenterConflict } from "../scenarios/sample-data";
 
 function runScenario(name: string, workOrders: any[]) {
   const service = new ReflowService();
@@ -38,3 +38,4 @@ function runScenario(name: string, workOrders: any[]) {
 runScenario("1) Delay Cascade", scenario1_delayCascade);
 runScenario("2) Shift Spanning", scenario2_shiftSpan);
 runScenario("3) Maintenance + Multi-parent + Fixed Maintenance WO", scenario3_maintenanceAndMultiparent);
+runScenario("4) Work Center Conflict Resolution", scenario4_workCenterConflict);
